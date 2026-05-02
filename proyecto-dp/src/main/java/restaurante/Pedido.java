@@ -20,7 +20,7 @@ public class Pedido {
     this.canal = canal;
     this.cliente = cliente;
     this.sucursal = sucursal;
-    this.estadoActual = EstadoOrden.PENDIENTE;
+    this.estadoActual = EstadoOrden.Pendiente;
     this.historialEstados = new ArrayList<>();
     this.historialEstados.add(estadoActual);
     this.items = new ArrayList<>();
@@ -50,25 +50,25 @@ public class Pedido {
     //Métodos para cambiar el estad del pedido
     public void confirmarPedido(){
         if (items.isEmpty()) {throw new EstadoInvalidoException("No se puede confirmar un pedido sin items");}
-        estadoActual = EstadoOrden.CONFIRMADO;
+        estadoActual = EstadoOrden.Confirmado;
         historialEstados.add(estadoActual);
     }
     
     public void enPreparacion(){
-        if(estadoActual != EstadoOrden.CONFIRMADO) {throw new EstadoInvalidoException("Solo se puede preparar un pedido confirmado");}
-        estadoActual = EstadoOrden.EN_PREPARACION;
+        if(estadoActual != EstadoOrden.Confirmado) {throw new EstadoInvalidoException("Solo se puede preparar un pedido confirmado");}
+        estadoActual = EstadoOrden.En_Preparacion;
         historialEstados.add(estadoActual);
     }
     
     public void listo(){
-        if(estadoActual != EstadoOrden.EN_PREPARACION) {throw new EstadoInvalidoException("Aún no está listo el pedido");}
-        estadoActual = EstadoOrden.LISTO;
+        if(estadoActual != EstadoOrden.En_Preparacion) {throw new EstadoInvalidoException("Aún no está listo el pedido");}
+        estadoActual = EstadoOrden.Listo;
         historialEstados.add(estadoActual);
     }
     
     public void cancelar(){
         items.clear();
-        estadoActual = EstadoOrden.CANCELADO;
+        estadoActual = EstadoOrden.Cancelado;
         historialEstados.add(estadoActual);
     }
 

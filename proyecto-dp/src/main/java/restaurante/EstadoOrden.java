@@ -7,5 +7,5 @@ public enum EstadoOrden {
       principio DIP
     */
     
-    PENDIENTE, CONFIRMADO, EN_PREPARACION, LISTO, ENVIADO, CANCELADO
+    Pendiente, Confirmado, En_Preparacion, Listo, Enviado, Cancelado
 }
