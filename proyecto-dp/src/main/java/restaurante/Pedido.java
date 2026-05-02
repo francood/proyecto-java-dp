@@ -8,7 +8,6 @@ public class Pedido {
     /*SRP PRINCIPIO DE RESPONSABILIDAD UNICA*/
     
     private String numeroOrden;
-    private EstadoOrden estado;
     private TipoCanal canal;
     private List<Item> items;
     private Cliente cliente;
@@ -29,12 +28,11 @@ public class Pedido {
     
     //Getters
     public String getNumeroOrden() {return numeroOrden;}
-    public EstadoOrden getEstado() {return estado;}
+    public EstadoOrden getEstado() {return estadoActual;}
     public TipoCanal getCanal() {return canal;}
     public Cliente getCliente(){return cliente;}
-    public List<Item>getItems(){
-        return items;
-    }
+    public List<Item>getItems(){return items;}
+    public List<EstadoOrden> getHistorialEstados() {return historialEstados;}
    
     
     //Métodos
@@ -51,22 +49,27 @@ public class Pedido {
     
     //Métodos para cambiar el estad del pedido
     public void confirmarPedido(){
-        if (items.isEmpty()) System.out.println("No se puede confirmar un pedido sin items");
-        else this.estado=EstadoOrden.CONFIRMADO;
+        if (items.isEmpty()) {throw new EstadoInvalidoException("No se puede confirmar un pedido sin items");}
+        estadoActual = EstadoOrden.CONFIRMADO;
+        historialEstados.add(estadoActual);
     }
     
     public void enPreparacion(){
-        if(estado!=EstadoOrden.CONFIRMADO) System.out.println("Solo se puede preparar un pedido confirmado");
-        else this.estado=EstadoOrden.EN_PREPARACION;
+        if(estadoActual != EstadoOrden.CONFIRMADO) {throw new EstadoInvalidoException("Solo se puede preparar un pedido confirmado");}
+        estadoActual = EstadoOrden.EN_PREPARACION;
+        historialEstados.add(estadoActual);
     }
+    
     public void listo(){
-        if(estado!=EstadoOrden.EN_PREPARACION) System.out.println("Aún no está listo el pedido");
-        else this.estado=EstadoOrden.LISTO;
+        if(estadoActual != EstadoOrden.EN_PREPARACION) {throw new EstadoInvalidoException("Aún no está listo el pedido");}
+        estadoActual = EstadoOrden.LISTO;
+        historialEstados.add(estadoActual);
     }
     
     public void cancelar(){
         items.clear();
-        this.estado=EstadoOrden.CANCELADO;
+        estadoActual = EstadoOrden.CANCELADO;
+        historialEstados.add(estadoActual);
     }
 
 }
