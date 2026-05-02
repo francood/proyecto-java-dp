@@ -13,6 +13,8 @@ public class Pedido {
     private List<Item> items;
     private Cliente cliente;
     private Restaurante sucursal;
+    private EstadoOrden estadoActual;
+    private List<EstadoOrden> historialEstados;
 
     public Pedido(String numeroOrden, TipoCanal canal, Cliente cliente, Restaurante sucursal) {
     this.numeroOrden = numeroOrden;
