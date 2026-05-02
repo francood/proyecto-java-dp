@@ -24,11 +24,14 @@ public class Restaurante {
         combo1.agregarProducto(bebida1); 
         System.out.println("Precio del combo: " + combo1.getPrecio());
         
-        // 3.Crear pedido
+        // 3.Crear pedido y sucursal
         Cliente cliente1 = new Cliente("C1001", "Ana Rojas");
-        Pedido pedido1 = new Pedido("PED-412", TipoCanal.PARA_LLEVAR, cliente1);
+        Restaurante sucursal = new Restaurante();
         
-        // 4.Crear ítems y agregar al pedido
+        //4. Crear Pedido
+        Pedido pedido1 = new Pedido("PED-412", TipoCanal.PARA_LLEVAR, cliente1, sucursal);
+        
+        // 5.Crear ítems y agregar al pedido
         ItemPedido item1 = new ItemPedido(plato1, 1);
         ItemPedido item2 = new ItemPedido(plato2, 3);
         ItemPedido item3 = new ItemPedido(pizza, 2);
@@ -36,6 +39,15 @@ public class Restaurante {
         pedido1.agregarItem(item1);
         pedido1.agregarItem(item2);
         pedido1.agregarItem(item3);
+
+        //6. Cambio de estados
+        try {
+            pedido1.confirmarPedido();
+            pedido1.enPreparacion();
+            pedido1.listo();
+        } catch (EstadoInvalidoException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
         
         // Personalizar plato1 (sin costo adicional)
         plato1.añadirExtras("Brocoli");
@@ -48,7 +60,10 @@ public class Restaurante {
         System.out.println("Subtotal sin descuento: " + pedido1.total());
         System.out.println("Total con descuento: " + totalConDescuento);
         System.out.println("Ahorro: " + (pedido1.total() - totalConDescuento));
-        
+
+        //Motrar Historial y eStados
+        System.out.println("Estado actual: " + pedido1.getEstado());
+        System.out.println("Historial: " + pedido1.getHistorialEstados());
         
     }
 }
