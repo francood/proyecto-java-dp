@@ -12,14 +12,19 @@ public class Pedido {
     private TipoCanal canal;
     private List<Item> items;
     private Cliente cliente;
+    private Restaurante sucursal;
 
-    public Pedido(String numeroOrden, TipoCanal canal, Cliente cliente) {
-        this.numeroOrden = numeroOrden;
-        this.canal = canal;
-        this.cliente=cliente;
-        this.estado = EstadoOrden.PENDIENTE;
-        this.items= new ArrayList<>();
-    }
+    public Pedido(String numeroOrden, TipoCanal canal, Cliente cliente, Restaurante sucursal) {
+    this.numeroOrden = numeroOrden;
+    this.canal = canal;
+    this.cliente = cliente;
+    this.sucursal = sucursal;
+    this.estadoActual = EstadoOrden.PENDIENTE;
+    this.historialEstados = new ArrayList<>();
+    this.historialEstados.add(estadoActual);
+    this.items = new ArrayList<>();
+}
+    
     //Getters
     public String getNumeroOrden() {return numeroOrden;}
     public EstadoOrden getEstado() {return estado;}
