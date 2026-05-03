@@ -1,4 +1,4 @@
-package restaurante.productos;
+package productos;
 public class Bebida implements ProductoVendible{
     
     private String nombre;

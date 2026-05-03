@@ -1,21 +1,22 @@
 package restaurante;
 
-import restaurante.productos.Plato;
-import restaurante.productos.Bebida;
-import restaurante.productos.Combo;
-import restaurante.productos.Adicionable;
-import restaurante.productos.ProductoSolido;
-import restaurante.productos.ProductoVendible;
+import productos.Plato;
+import productos.Bebida;
+import productos.Combo;
+import productos.Adicionable;
+import productos.Producto;
+import productos.ProductoVendible;
 
 public class Restaurante {
     public static void main(String[] args) {
         
         // 1.Crear productos
-        ProductoSolido plato1 = new Plato("Aeropuerto", 22.5);
-        ProductoSolido plato2 = new Plato("Tallarines verdes", 18);
-        ProductoSolido pizza = new Plato("Pizza Americana", 23);
-        ProductoVendible bebida1 = new Bebida("Limonada", 4.5, "mediano");
-        Adicionable quesoExtra = new Adicionable("Queso extra", 5);
+        Plato plato1 = new Plato("Aeropuerto", 22.5);
+        Plato  plato2 = new Plato("Tallarines verdes", 18);
+        Producto  pizza = new Plato("Pizza Americana", 23);
+        Bebida bebida1 = new Bebida("Limonada", 4.5, "mediano");
+        Adicionable quesoExtra = new Adicionable(plato1,"Queso extra", 5);
+        System.out.println("plato 1:"+quesoExtra.getNombre());
         
         // 2.Crear combo con descuento 15%
         Combo combo1 = new Combo("Combo criollo", 15);
@@ -35,7 +36,6 @@ public class Restaurante {
         ItemPedido item1 = new ItemPedido(plato1, 1);
         ItemPedido item2 = new ItemPedido(plato2, 3);
         ItemPedido item3 = new ItemPedido(pizza, 2);
-        item3.agregarAdicionable(quesoExtra);  // queso extra para cada pizza
         pedido1.agregarItem(item1);
         pedido1.agregarItem(item2);
         pedido1.agregarItem(item3);
@@ -51,6 +51,8 @@ public class Restaurante {
         
         // Personalizar plato1 (sin costo adicional)
         plato1.añadirExtras("Brocoli");
+        plato1.quitarIngredientes("cebolla");
+        
         
         // 5.Aplicar promoción del 5% sobre el total del pedido
         PromocionesTemporada promo1 = new PromocionesTemporada("Jueves de promo", 5);

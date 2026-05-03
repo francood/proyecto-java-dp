@@ -1,4 +1,4 @@
-package restaurante.productos;
+package productos;
 public class MenuPersonalizado extends Producto{
 
     public MenuPersonalizado(String nombre, double precioBase) {

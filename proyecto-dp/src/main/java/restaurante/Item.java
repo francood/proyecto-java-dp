@@ -1,7 +1,7 @@
 
 package restaurante;
 
-import restaurante.productos.ProductoVendible;
+import productos.ProductoVendible;
 
 public interface Item {
     

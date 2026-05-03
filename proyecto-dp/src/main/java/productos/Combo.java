@@ -1,4 +1,4 @@
-package restaurante.productos;
+package productos;
 
 import java.util.ArrayList;
 import java.util.List;
