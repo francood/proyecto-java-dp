@@ -1,5 +1,6 @@
 package restaurante;
 
+import productos.prototype.Producto;
 import productos.ProductoVendible;
 
 public class ItemPedido implements Item {
@@ -25,10 +26,19 @@ public class ItemPedido implements Item {
         double total=cantidad*producto.getPrecio();
         
         return total;
-    
     }
     
-    
-    
+    public String getInstruccionesCocina() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(producto.getNombre());
+        if (producto instanceof Producto) {
+            Producto p = (Producto) producto;
+            if (!p.getIngredientesQuitados().isEmpty()) {
+                sb.append(" (sin: ").append(String.join(", ", p.getIngredientesQuitados())).append(")");
+            }
+        }
+        return sb.toString();
+    }
+
 
 }

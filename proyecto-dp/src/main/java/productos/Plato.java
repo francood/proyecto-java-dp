@@ -1,5 +1,7 @@
 package productos;
 
+import productos.prototype.Producto;
+
 /*PRINCIPIO LSP . Plato extiende a producto*/
 //Platos a la carta
 public class Plato extends Producto{
