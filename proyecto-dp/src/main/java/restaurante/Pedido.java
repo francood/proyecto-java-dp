@@ -1,8 +1,11 @@
 package restaurante;
 
+import restaurante.exceptions.EstadoInvalidoException;
 import restaurante.bridge.CanalImplementor;
 import java.util.ArrayList;
 import java.util.List;
+import productos.ProductoVendible;
+import restaurante.exceptions.StockInsuficienteException;
 import restaurante.observer.Observador;
 import restaurante.state.EstadoPedido;
 import restaurante.state.PendienteState;
@@ -162,11 +165,20 @@ public class Pedido {
         // (Opcional) también se podría restaurar el historial, pero no se guarda en Memento
     }
 
-    //MÉTODOS PARA CAMBIAR ESTADO
-    public void confirmarPedido() {
+    // métodos para cambiar estado del pedido
+    public void confirmarPedido() throws StockInsuficienteException {
         if (items.isEmpty()) {
             throw new EstadoInvalidoException("No se puede confirmar un pedido sin items");
         }
+
+        // Verificar y descontar stock (E4)
+        Inventario inventario = Inventario.getInstancia();
+        inventario.verificarStock(this);
+        for (Item item : items) {
+            inventario.descontarStock(item.getProducto(), item.getCantidad());
+        }
+
+        // Resto del metodo original
         EstadoOrden anterior = this.estadoActual;
         this.estadoActual = EstadoOrden.Confirmado;
         historialEstados.add(estadoActual);
@@ -201,6 +213,7 @@ public class Pedido {
         this.estadoActual = EstadoOrden.Enviado;
         historialEstados.add(estadoActual);
         notificarObservadores(anterior, estadoActual);
+        PersistenciaPedidos.guardarPedido(this);
     }
 
     public void cancelar() {
@@ -212,6 +225,7 @@ public class Pedido {
         this.estadoActual = EstadoOrden.Cancelado;
         historialEstados.add(estadoActual);
         notificarObservadores(anterior, estadoActual);
+        PersistenciaPedidos.guardarPedido(this);
     }
 
    // MÉTODOS PARA OBSERVADORES

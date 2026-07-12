@@ -5,7 +5,7 @@ import restaurante.observer.RepartoObserver;
 import restaurante.observer.AlmacenObserver;
 import restaurante.observer.CocinaObserver;
 import restaurante.builder.PedidoBuilder;
-import restaurante.EstadoInvalidoException;
+import restaurante.exceptions.EstadoInvalidoException;
 import restaurante.TipoCanal;
 import java.util.List;
 import restaurante.Cliente;
