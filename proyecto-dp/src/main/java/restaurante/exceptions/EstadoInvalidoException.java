@@ -1,4 +1,4 @@
-package restaurante;
+package restaurante.exceptions;
 
 public class EstadoInvalidoException extends RuntimeException {
 
