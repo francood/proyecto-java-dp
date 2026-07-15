@@ -1,20 +1,44 @@
 package com.utp.dp;
 
-import restaurante.exceptions.EstadoInvalidoException;
+import core.bridge.CanalImplementor;
+import core.bridge.ParaLlevar;
+import core.builder.PedidoBuilder;
+import core.eventos.AlmacenObserver;
+import core.eventos.CajaObserver;
+import core.eventos.ClienteNotificadorObserver;
+import core.eventos.CocinaObserver;
+import core.eventos.RepartoObserver;
+import core.exceptions.EstadoInvalidoException;
+import core.exceptions.StockInsuficienteException;
+import core.factory.ProductoFactory;
+import core.memento.Caretaker;
+import core.modelo.Cliente;
+import core.modelo.EstadoOrden;
+import core.modelo.GeneradorReportes;
+import core.modelo.Inventario;
+import core.modelo.Item;
+import core.modelo.ItemPedido;
+import core.modelo.Pedido;
+import core.modelo.PersistenciaPedidos;
+import core.modelo.Sucursal;
+import core.modelo.TipoCanal;
+import core.pagos.PagoTarjeta;
+import core.pagos.MetodoPago;
+import core.productos.Bebida;
+import core.productos.Plato;
 import java.util.Arrays;
 import java.util.List;
 
-import productos.*;
-import productos.ProductoVendible;
-import productos.factory.ProductoFactory;
-import restaurante.*;
-import restaurante.bridge.*;
-import restaurante.builder.*;
-import restaurante.exceptions.StockInsuficienteException;
-import restaurante.memento.*;
-import restaurante.observer.*;
-import restaurante.pagos.*;
-import restaurante.strategy.*;
+import core.productos.ProductoVendible;
+import core.promociones.AplicadorPromociones;
+import core.promociones.Promocion2x1;
+import core.promociones.PromocionMontoFijo;
+import core.promociones.PromocionPorCanal;
+import core.promociones.PromocionPorSucursal;
+import core.promociones.PromocionPorcentaje;
+import core.strategy.Promocion;
+
+
 public class Demo {
 
 public static void main(String[] args) {
