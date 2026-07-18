@@ -4,14 +4,7 @@ package core.productos;
 //Platos a la carta
 public class Plato extends Producto{
 
-    public Plato(String nombre, double precio) {
-        super(nombre, precio);
+    public Plato(String id, String nombre, double precio) {
+        super(id, nombre, precio);
     }
-
-    @Override
-    public String getId() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-    
-
 }

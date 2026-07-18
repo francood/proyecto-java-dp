@@ -1,26 +1,53 @@
 package core.factory;
 
 import core.productos.MenuPersonalizado;
-import core.factory.MenuAbstractFactory;
 import core.productos.Plato;
 import core.productos.Bebida;
 import core.productos.Combo;
 import core.productos.ProductoVendible;
+import dao.ProductoDAO;
+import entity.ProductoEntity;
 
 /**
  * Fábrica de menús para DELIVERY.
- * Productos que resisten bien el transporte.
+ * Utiliza productos reales de la base de datos.
  */
 public class DeliveryMenuFactory implements MenuAbstractFactory {
 
+    private ProductoDAO productoDAO;
+
+    // Inyección de dependencia
+    public DeliveryMenuFactory(ProductoDAO productoDAO) {
+        this.productoDAO = productoDAO;
+    }
+
     @Override
     public Plato crearPlatoPrincipal() {
-        return ProductoFactory.crearPlato("Pizza Familiar", 35.0);
+        // Buscar el producto real por nombre o ID
+        try {
+            ProductoEntity entity = productoDAO.buscarPorNombre("Pizza Familiar");
+            if (entity != null) {
+                return new Plato(entity.getIdProducto(), entity.getNombre(), entity.getPrecio());
+            } else {
+                return ProductoFactory.crearPlato("D001", "Pizza Familiar", 35.0);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener producto: " + e.getMessage());
+        }
     }
 
     @Override
     public Bebida crearBebida() {
-        return ProductoFactory.crearBebida("Limonada Frozen", 7.0, "grande");
+        try {
+            ProductoEntity entity = productoDAO.buscarPorNombre("Limonada Frozen");
+            if (entity != null) {
+                return new Bebida(entity.getIdProducto(), entity.getNombre(), entity.getPrecio(), "grande");
+            } else {
+                return ProductoFactory.crearBebida("D002", "Limonada Frozen", 7.0, "grande");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener producto: " + e.getMessage());
+        }
     }
 
     @Override
@@ -34,7 +61,6 @@ public class DeliveryMenuFactory implements MenuAbstractFactory {
     @Override
     public ProductoVendible crearMenuPersonalizado(ProductoVendible base) {
         MenuPersonalizado menu = ProductoFactory.crearMenuPersonalizado(base);
-        // Extras típicos de delivery
         menu.agregarExtra("Queso extra", 2.5);
         menu.agregarExtra("Aceitunas", 1.5);
         return menu;

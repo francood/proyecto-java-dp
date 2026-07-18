@@ -6,6 +6,8 @@ import core.productos.Plato;
 import core.productos.Bebida;
 import core.productos.Combo;
 import core.productos.ProductoVendible;
+import dao.ProductoDAO;
+import entity.ProductoEntity;
 
 /**
  * Fábrica de menús para el canal PARA LLEVAR.
@@ -13,14 +15,38 @@ import core.productos.ProductoVendible;
  */
 public class ParaLlevarMenuFactory implements MenuAbstractFactory {
 
+    private ProductoDAO productoDAO;
+
+    public ParaLlevarMenuFactory(ProductoDAO productoDAO) {
+        this.productoDAO = productoDAO;
+    }
+
     @Override
     public Plato crearPlatoPrincipal() {
-        return ProductoFactory.crearPlato("Pollo a la Brasa", 22.0);
+        try {
+            ProductoEntity entity = productoDAO.buscarPorNombre("Pollo a la Brasa");
+            if (entity != null) {
+                return new Plato(entity.getIdProducto(), entity.getNombre(), entity.getPrecio());
+            } else {
+                throw new RuntimeException("Producto 'Pollo a la Brasa' no encontrado en la base de datos.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener producto: " + e.getMessage(), e);
+        }
     }
 
     @Override
     public Bebida crearBebida() {
-        return ProductoFactory.crearBebida("Gaseosa", 4.0, "mediano");
+        try {
+            ProductoEntity entity = productoDAO.buscarPorNombre("Gaseosa");
+            if (entity != null) {
+                return new Bebida(entity.getIdProducto(), entity.getNombre(), entity.getPrecio(), "mediano");
+            } else {
+                throw new RuntimeException("Producto 'Gaseosa' no encontrado en la base de datos.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener producto: " + e.getMessage(), e);
+        }
     }
 
     @Override

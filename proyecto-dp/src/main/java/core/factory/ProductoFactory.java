@@ -16,15 +16,15 @@ public class ProductoFactory {
     /**
      * Crea un plato.
      */
-    public static Plato crearPlato(String nombre, double precio) {
-        return new Plato(nombre, precio);
+    public static Plato crearPlato(String id, String nombre, double precio) {
+        return new Plato(id, nombre, precio);
     }
 
     /**
      * Crea una bebida.
      */
-    public static Bebida crearBebida(String nombre, double precio, String tamanio) {
-        return new Bebida(nombre, precio, tamanio);
+    public static Bebida crearBebida(String id, String nombre, double precio, String tamanio) {
+        return new Bebida(id,nombre, precio, tamanio);
     }
 
     /**
@@ -44,7 +44,7 @@ public class ProductoFactory {
     /**
      * Crea un producto con un extra aplicado (Decorator).
      */
-    public static ProductoVendible agregarExtra(ProductoVendible base, String nombreExtra, double costo) {
-        return new Adicionable(base, nombreExtra, costo);
-    }
+    public static ProductoVendible agregarExtra(ProductoVendible base, String idAdicional, String nombreExtra, double costo) {
+        return new Adicionable(base, idAdicional, nombreExtra, costo);
+}
 }

@@ -5,11 +5,14 @@ import java.util.List;
 
 public class Combo implements ProductoVendible{
 
+        private String id;
         private String nombre;
         private List<ProductoVendible> items;
         private double descuentoPorcentaje;
+        private static int contador =0;
         
         public Combo(String nombre, double descuentoPorcentaje){
+        this.id= "CMB-"+(++contador);
         this.nombre=nombre;
         this.descuentoPorcentaje=descuentoPorcentaje;;
         this.items=new ArrayList<>();
@@ -51,6 +54,6 @@ public class Combo implements ProductoVendible{
 
     @Override
     public String getId() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return id;
     }
 }

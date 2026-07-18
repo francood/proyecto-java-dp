@@ -2,11 +2,13 @@ package core.productos;
 
 public class Bebida implements ProductoVendible{
     
+    private String id;
     private String nombre;
     private double precio;
     private String tamanio;
 
-    public Bebida(String nombre, double precio, String tamanio) {
+    public Bebida(String id, String nombre, double precio, String tamanio) {
+        this.id=id;
         this.nombre = nombre;
         this.precio = precio;
         this.tamanio=tamanio;
@@ -28,7 +30,7 @@ public class Bebida implements ProductoVendible{
 
     @Override
     public String getId() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return id;
     }
 
 
