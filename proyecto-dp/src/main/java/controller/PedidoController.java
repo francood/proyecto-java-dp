@@ -54,7 +54,6 @@ public class PedidoController {
         entity.setEstado(pedido.getEstado().toString());
         entity.setCalificacion(calificacion != null ? calificacion : 0);
         entity.setComentario(comentario);
-        entity.setIdEmpleado(idEmpleado);
 
         // 4. Guardar pedido y obtener ID
         int idPedido = pedidoDAO.guardar(entity);
