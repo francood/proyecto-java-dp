@@ -14,6 +14,10 @@ public abstract class ProductoDecorator implements ProductoVendible {
     this.productoBase=productoBase;
     
     }
+    
+    public ProductoVendible getProductoBase() {
+    return productoBase;
+}
 
     @Override
     public String getNombre() {

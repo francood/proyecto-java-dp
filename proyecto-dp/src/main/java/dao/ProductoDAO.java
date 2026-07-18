@@ -1,6 +1,7 @@
 package dao;
 
-import com.utp.restaurante.database.AccesoDB;
+import conexion.AccesoDB;
+import conexion.AccesoDB_main;
 import entity.ProductoEntity;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,12 +46,14 @@ public class ProductoDAO {
             String cod = generarCodigo();
             o.setIdProducto(cod);
 
-            sql = "INSERT INTO productos (id_producto, nombre, precio, stock) VALUES (?, ?, ?, ?)";
+            sql = "INSERT INTO productos (id_producto, nombre, precio, stock, tipo, tamanio) VALUES (?, ?, ?, ?, ?, ?)";
             ps = cn.prepareStatement(sql);
             ps.setString(1, o.getIdProducto());
             ps.setString(2, o.getNombre());
             ps.setDouble(3, o.getPrecio());
             ps.setInt(4, o.getStock());
+            ps.setString(5, o.getTipo() != null ? o.getTipo() : "PLATO");
+            ps.setString(6, o.getTamanio()); // puede ser null
             ps.executeUpdate();
             ps.close();
 
@@ -67,7 +70,7 @@ public class ProductoDAO {
         List<ProductoEntity> lista = new ArrayList<>();
         try {
             cn = AccesoDB.getConnection();
-            sql = "SELECT * FROM productos ORDER BY nombre";
+            sql = "SELECT id_producto, nombre, precio, stock, tipo, tamanio FROM productos ORDER BY nombre";
             ps = cn.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -76,6 +79,8 @@ public class ProductoDAO {
                 p.setNombre(rs.getString("nombre"));
                 p.setPrecio(rs.getDouble("precio"));
                 p.setStock(rs.getInt("stock"));
+                p.setTipo(rs.getString("tipo"));
+                p.setTamanio(rs.getString("tamanio"));
                 lista.add(p);
             }
             rs.close();
@@ -92,7 +97,7 @@ public class ProductoDAO {
         ProductoEntity p = null;
         try {
             cn = AccesoDB.getConnection();
-            sql = "SELECT * FROM productos WHERE id_producto = ?";
+            sql = "SELECT id_producto, nombre, precio, stock, tipo, tamanio FROM productos WHERE id_producto = ?";
             ps = cn.prepareStatement(sql);
             ps.setString(1, id);
             rs = ps.executeQuery();
@@ -102,6 +107,8 @@ public class ProductoDAO {
                 p.setNombre(rs.getString("nombre"));
                 p.setPrecio(rs.getDouble("precio"));
                 p.setStock(rs.getInt("stock"));
+                p.setTipo(rs.getString("tipo"));
+                p.setTamanio(rs.getString("tamanio"));
             }
             rs.close();
             ps.close();
@@ -117,7 +124,7 @@ public class ProductoDAO {
         ProductoEntity p = null;
         try {
             cn = AccesoDB.getConnection();
-            sql = "SELECT * FROM productos WHERE nombre = ?";
+            sql = "SELECT id_producto, nombre, precio, stock, tipo, tamanio FROM productos WHERE nombre = ?";
             ps = cn.prepareStatement(sql);
             ps.setString(1, nombre);
             rs = ps.executeQuery();
@@ -127,6 +134,8 @@ public class ProductoDAO {
                 p.setNombre(rs.getString("nombre"));
                 p.setPrecio(rs.getDouble("precio"));
                 p.setStock(rs.getInt("stock"));
+                p.setTipo(rs.getString("tipo"));
+                p.setTamanio(rs.getString("tamanio"));
             }
             rs.close();
             ps.close();
@@ -159,7 +168,6 @@ public class ProductoDAO {
             cn = AccesoDB.getConnection();
             cn.setAutoCommit(false);
 
-            // Verificar stock actual
             sql = "SELECT stock FROM productos WHERE id_producto = ? FOR UPDATE";
             ps = cn.prepareStatement(sql);
             ps.setString(1, idProducto);

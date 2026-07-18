@@ -131,6 +131,10 @@ public class Pedido {
     public void setCanalImplementor(CanalImplementor implementor) {
         this.canalImplementor = implementor;
     }
+    
+    public CanalImplementor getCanalImplementor() {
+        return canalImplementor;
+}
 
     public void procesarCanal() {
         if (canalImplementor != null) {

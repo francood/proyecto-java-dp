@@ -10,6 +10,8 @@ import core.eventos.CocinaObserver;
 import core.eventos.RepartoObserver;
 import core.exceptions.EstadoInvalidoException;
 import core.exceptions.StockInsuficienteException;
+import core.factory.DeliveryMenuFactory;
+import core.factory.MenuAbstractFactory;
 import core.factory.ProductoFactory;
 import core.memento.Caretaker;
 import core.modelo.Cliente;
@@ -24,6 +26,7 @@ import core.modelo.Sucursal;
 import core.modelo.TipoCanal;
 import core.pagos.PagoTarjeta;
 import core.pagos.MetodoPago;
+import core.productos.Adicionable;
 import core.productos.Bebida;
 import core.productos.Plato;
 import java.util.Arrays;
@@ -37,37 +40,45 @@ import core.promociones.PromocionPorCanal;
 import core.promociones.PromocionPorSucursal;
 import core.promociones.PromocionPorcentaje;
 import core.strategy.Promocion;
+import dao.ProductoDAO;
 
 
 public class Demo {
 
 public static void main(String[] args) {
-
+    
+        ProductoDAO productoDAO = new ProductoDAO();
+        MenuAbstractFactory factory = new DeliveryMenuFactory(productoDAO);
+    
         System.out.println("=== SISTEMA DE GESTION DE PEDIDOS - DEMO COMPLETA ===\n");
 
         // 1. Configuracion inicial
         Sucursal sucursalCentral = new Sucursal(1, "Restaurante Central", "Av. Principal 123", "555-1234");
         Cliente cliente = new Cliente("C1001", "Ana Rojas");
 
-        // 2. Cargar inventario inicial (E4)
+        // 2. Cargar inventario inicial
         System.out.println("--- CARGANDO INVENTARIO ---");
         Inventario inventario = Inventario.getInstancia();
+        
+        Plato plato = factory.crearPlatoPrincipal();
+        Bebida bebida = factory.crearBebida();
+        Plato plato2 = factory.crearPlatoPrincipal();
+        
+        plato = ProductoFactory.crearPlato("P002","Aeropuerto", 22.5);
+        plato2 = ProductoFactory.crearPlato("P001","Tallarines verdes", 18);
+        ProductoVendible pizza = ProductoFactory.crearPlato("P001","Pizza Americana", 23);
+        bebida = ProductoFactory.crearBebida("P004","Limonada", 4.5, "mediano");
 
-        Plato plato1 = ProductoFactory.crearPlato("Aeropuerto", 22.5);
-        Plato plato2 = ProductoFactory.crearPlato("Tallarines verdes", 18);
-        ProductoVendible pizza = ProductoFactory.crearPlato("Pizza Americana", 23);
-        Bebida bebida1 = ProductoFactory.crearBebida("Limonada", 4.5, "mediano");
-
-        inventario.agregarStock(plato1, 10);
+        inventario.agregarStock(plato, 10);
         inventario.agregarStock(plato2, 5);
         inventario.agregarStock(pizza, 3);
-        inventario.agregarStock(bebida1, 8);
+        inventario.agregarStock(bebida, 8);
 
         inventario.mostrarInventario();
 
         // 3. Crear items del pedido
         List<Item> items = Arrays.asList(
-                new ItemPedido(plato1, 1),
+                new ItemPedido(plato, 1),
                 new ItemPedido(plato2, 2),
                 new ItemPedido(pizza, 1)
         );
@@ -83,20 +94,25 @@ public static void main(String[] args) {
                 .agregarItem(items.get(1))
                 .agregarItem(items.get(2))
                 .build();
+        
+        // Crear un adicional con ID real
+        Adicionable quesoExtra = new Adicionable(pizza, "A001", "Queso extra", 2.5);
+        ItemPedido itemConQueso = new ItemPedido(quesoExtra, 2);
+        pedido.agregarItem(itemConQueso);
 
         // 5. Bridge: procesamiento por canal
         CanalImplementor implementor = new ParaLlevar();
         pedido.setCanalImplementor(implementor);
         pedido.procesarCanal();
 
-        // 6. Registrar observadores (D2 + D4)
+        // 6. Registrar observadores
         pedido.agregarObservador(new CocinaObserver());
         pedido.agregarObservador(new CajaObserver());
         pedido.agregarObservador(new AlmacenObserver());
         pedido.agregarObservador(new RepartoObserver());
         pedido.agregarObservador(new ClienteNotificadorObserver());
 
-        // 7. Verificar stock ANTES de confirmar (E4)
+        // 7. Verificar stock ANTES de confirmar
         System.out.println("\n--- VERIFICANDO STOCK ANTES DE CONFIRMAR ---");
         try {
             inventario.verificarStock(pedido);
@@ -106,10 +122,10 @@ public static void main(String[] args) {
             return;
         }
 
-        // 8. Flujo de estados (A1)
+        // 8. Flujo de estados 
         System.out.println("\n--- FLUJO DEL PEDIDO ---");
         try {
-            pedido.confirmarPedido();  // Aqui se descuenta el stock (E4)
+            pedido.confirmarPedido();  // Aqui se descuenta el stock 
             pedido.enPreparacion();
             pedido.listo();
             pedido.enviar();
@@ -118,7 +134,7 @@ public static void main(String[] args) {
             return;
         }
 
-        // 9. Mostrar inventario DESPUES de confirmar (E4)
+        // 9. Mostrar inventario DESPUES de confirmar 
         System.out.println("\n--- INVENTARIO DESPUES DE CONFIRMAR ---");
         inventario.mostrarInventario();
 
@@ -131,7 +147,7 @@ public static void main(String[] args) {
         pago.procesarPago(total);
         System.out.println("Metodo de pago: " + pago.getDescripcion());
 
-        // 11. Promociones avanzadas (C3 + C4)
+        // 11. Promociones avanzadas
         System.out.println("\n--- PROMOCIONES AVANZADAS ---");
         Promocion promoPorcentaje = new PromocionPorcentaje(10);
         Promocion promoFijo = new PromocionMontoFijo(15);
@@ -144,7 +160,7 @@ public static void main(String[] args) {
         System.out.println("Total con descuento: S/" + totalConDescuento);
         System.out.println("Ahorro: S/" + (pedido.total() - totalConDescuento));
 
-        // 12. Memento (E1) - se guarda el estado actual (Enviado) y luego se intenta cancelar
+        // 12. Memento - se guarda el estado actual (Enviado) y luego se intenta cancelar
         System.out.println("\n--- MEMENTO ---");
         Caretaker caretaker = new Caretaker();
         caretaker.guardar(pedido.guardarEstado());
@@ -163,12 +179,12 @@ public static void main(String[] args) {
         pedido.restaurarEstado(caretaker.obtenerUltimo());
         System.out.println("Estado restaurado mediante Memento: " + pedido.getEstado());
 
-        // 13. Persistencia en CSV (E2)
+        // 13. Persistencia en CSV 
         System.out.println("\n--- PERSISTENCIA EN CSV ---");
         PersistenciaPedidos.guardarPedido(pedido);
         System.out.println("Pedido guardado en pedidos.csv");
 
-        // 14. Generar reportes (E3 + E5)
+        // 14. Generar reportes 
         System.out.println("\n--- REPORTES ---");
         System.out.println("=== REPORTE GENERAL ===");
         GeneradorReportes.generarReporte();

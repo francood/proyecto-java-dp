@@ -5,16 +5,23 @@ import java.util.List;
 import core.productos.ProductoVendible;
 
 public abstract class Producto implements ProductoVendible, Cloneable {
-
+    
+    private String id;
     private String nombre;
     private double precio;
     private List<String> ingredientesQuitados = new ArrayList<>();
 
-    public Producto(String nombre, double precio) {
+    public Producto(String id, String nombre, double precio) {
+        this.id=id;
         this.nombre = nombre;
         this.precio = precio;
     }
-
+    
+    @Override
+    public String getId() {
+        return id;
+    }
+    
     @Override
     public String getNombre() {
         return nombre;
@@ -40,12 +47,10 @@ public abstract class Producto implements ProductoVendible, Cloneable {
     public Producto clonar() {
         try {
             Producto clon = (Producto) super.clone();
-            // Copia profunda de la lista de ingredientes
+            // Copia de la lista de ingredientes
             clon.ingredientesQuitados = new ArrayList<>(this.ingredientesQuitados);
             return clon;
         } catch (CloneNotSupportedException e) {
-            // Fallback: crear una nueva instancia (dependiendo de la subclase)
-            // En este caso, lanzamos RuntimeException para no complicar.
             throw new RuntimeException("Error al clonar producto", e);
         }
     }

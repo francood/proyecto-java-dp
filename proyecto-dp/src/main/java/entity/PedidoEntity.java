@@ -5,11 +5,13 @@ public class PedidoEntity {
     private int idPedido;
     private String idCliente;
     private int idSucursal;
+    private String idEmpleado;
     private String canal;
     private double total;
     private String estado;
     private String fecha;
-
+    private Integer calificacion; // 1-5 estrellas, o null si no es calificado
+    private String comentario; 
     public PedidoEntity() {
     }
 
@@ -78,4 +80,30 @@ public class PedidoEntity {
     public void setFecha(String fecha) {
         this.fecha = fecha;
     }
+
+    public Integer getCalificacion() {
+        return calificacion;
+    }
+
+    public void setCalificacion(Integer calificacion) {
+        this.calificacion = calificacion;
+    }
+
+    public String getComentario() {
+        return comentario;
+    }
+
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
+    }
+
+    public String getIdEmpleado() {
+        return idEmpleado;
+    }
+
+    public void setIdEmpleado(String idEmpleado) {
+        this.idEmpleado = idEmpleado;
+    }
+    
+    
 }

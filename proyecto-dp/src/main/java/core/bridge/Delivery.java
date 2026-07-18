@@ -16,4 +16,9 @@ public class Delivery implements CanalImplementor {
     public String getDescripcion() {
         return "Entrega a domicilio";
     }
+
+    @Override
+    public int getTiempoEstimado() {
+        return 30;
+    }
 }

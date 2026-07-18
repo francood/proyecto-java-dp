@@ -16,4 +16,9 @@ public class ParaLlevar implements CanalImplementor {
     public String getDescripcion() {
         return "Recojo en local";
     }
+
+    @Override
+    public int getTiempoEstimado() {
+       return 15;
+    }
 }

@@ -16,4 +16,9 @@ public class Local implements CanalImplementor {
     public String getDescripcion() {
         return "Atención en mesa";
     }
+
+    @Override
+    public int getTiempoEstimado() {
+       return 10;
+    }
 }

@@ -6,6 +6,8 @@ public class ProductoEntity {
     private String nombre;
     private double precio;
     private int stock;
+    private String tipo; //plato - bebida - combo
+    private String tamanio; //solo para bebida
 
     public ProductoEntity() {
     }
@@ -16,6 +18,15 @@ public class ProductoEntity {
         this.precio = precio;
         this.stock = stock;
     }
+    
+    public ProductoEntity(String idProducto, String nombre, double precio, int stock, String tipo, String tamanio) {
+    this.idProducto = idProducto;
+    this.nombre = nombre;
+    this.precio = precio;
+    this.stock = stock;
+    this.tipo = tipo;
+    this.tamanio = tamanio;
+}
 
     public String getIdProducto() {
         return idProducto;
@@ -47,5 +58,20 @@ public class ProductoEntity {
 
     public void setStock(int stock) {
         this.stock = stock;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+    public String getTamanio() {
+        return tamanio;
+    }
+
+    public void setTamanio(String tamanio) {
+        this.tamanio = tamanio;
     }
 }

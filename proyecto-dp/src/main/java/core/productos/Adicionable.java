@@ -7,16 +7,17 @@ package core.productos;
 */
 public class Adicionable extends ProductoDecorator implements ProductoVendible {
     
+    private String id;
     private String nombreAdicional;
     private double precioAdicional;
 
 
-    public Adicionable(ProductoVendible productoBase, String nombreAdicional, double precioAdicional) {
-        super(productoBase);
-        this.nombreAdicional=nombreAdicional;
-        this.precioAdicional=precioAdicional;
-
-    }
+    public Adicionable(ProductoVendible productoBase, String idAdicional, String nombreAdicional, double precioAdicional) {
+    super(productoBase);
+    this.id = idAdicional;
+    this.nombreAdicional = nombreAdicional;
+    this.precioAdicional = precioAdicional;
+}
     
     
     @Override
@@ -32,7 +33,7 @@ public class Adicionable extends ProductoDecorator implements ProductoVendible {
 
     @Override
     public String getId() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return id;
     }
 
 }
