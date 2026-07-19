@@ -35,4 +35,8 @@ public class ProductoController {
     public void descontarStock(String idProducto, int cantidad) throws Exception {
         dao.descontarStock(idProducto, cantidad);
     }
+    
+        public void eliminar(String idProducto) throws Exception {
+        dao.eliminar(idProducto);
+    }
 }
