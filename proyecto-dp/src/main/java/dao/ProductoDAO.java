@@ -147,6 +147,26 @@ public class ProductoDAO {
         return p;
     }
 
+        public void eliminar(String idProducto) throws Exception {
+        try {
+            cn = AccesoDB.getConnection();
+
+            sql = "DELETE FROM productos WHERE id_producto = ?";
+
+            ps = cn.prepareStatement(sql);
+            ps.setString(1, idProducto);
+
+            ps.executeUpdate();
+
+            ps.close();
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            cn.close();
+        }
+    }
+
     public void actualizarStock(String idProducto, int nuevoStock) throws Exception {
         try {
             cn = AccesoDB.getConnection();
