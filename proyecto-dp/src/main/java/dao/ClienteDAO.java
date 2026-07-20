@@ -114,4 +114,38 @@ public class ClienteDAO {
         }
         return cli;
     }
+
+    
+    public void actualizar(ClienteEntity o) throws Exception {
+        try {
+            cn = AccesoDB.getConnection();
+            sql = "UPDATE clientes SET nombre = ?, direccion = ?, telefono = ? "
+                    + "WHERE id_cliente = ?";
+            ps = cn.prepareStatement(sql);
+            ps.setString(1, o.getNombre());
+            ps.setString(2, o.getDireccion());
+            ps.setString(3, o.getTelefono());
+            ps.setString(4, o.getIdCliente());
+            ps.executeUpdate();
+            ps.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            cn.close();
+        }
+    }
+    public void eliminar(String id) throws Exception {
+        try {
+            cn = AccesoDB.getConnection();
+            sql = "DELETE FROM clientes WHERE id_cliente = ?";
+            ps = cn.prepareStatement(sql);
+            ps.setString(1, id);
+            ps.executeUpdate();
+            ps.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            cn.close();
+        }
+    }
 }
