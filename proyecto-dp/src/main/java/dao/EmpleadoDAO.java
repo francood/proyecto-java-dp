@@ -166,4 +166,41 @@ public class EmpleadoDAO {
         }
         return valido;
     }
+
+    public void actualizar(EmpleadoEntity o) throws Exception {
+        try {
+            cn = AccesoDB.getConnection();
+            sql = "UPDATE empleados SET nombre = ?, apellidos = ?, "
+                    + "email = ?, usuario = ?, clave = ? "
+                    + "WHERE id_empleado = ?";
+            ps = cn.prepareStatement(sql);
+            ps.setString(1, o.getNombre());
+            ps.setString(2, o.getApellidos());
+            ps.setString(3, o.getEmail());
+            ps.setString(4, o.getUsuario());
+            ps.setString(5, o.getClave());
+            ps.setString(6, o.getIdEmpleado());
+            ps.executeUpdate();
+            ps.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            cn.close();
+        }
+    }
+
+    public void eliminar(String id) throws Exception {
+        try {
+            cn = AccesoDB.getConnection();
+            sql = "DELETE FROM empleados WHERE id_empleado = ?";
+            ps = cn.prepareStatement(sql);
+            ps.setString(1, id);
+            ps.executeUpdate();
+            ps.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            cn.close();
+        }
+    }
 }
