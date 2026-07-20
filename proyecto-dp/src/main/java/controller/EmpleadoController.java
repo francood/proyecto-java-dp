@@ -31,4 +31,12 @@ public class EmpleadoController {
     public boolean validarLogin(String usuario, String clave) throws Exception {
         return dao.validarCredenciales(usuario, clave);
     }
+
+    public void actualizar(EmpleadoEntity empleado) throws Exception {
+        dao.actualizar(empleado);
+    }
+
+    public void eliminar(String id) throws Exception {
+        dao.eliminar(id);
+    }
 }
