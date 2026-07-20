@@ -23,4 +23,12 @@ public class ClienteController {
     public void registrar(ClienteEntity cliente) throws Exception {
         dao.crear(cliente);
     }
+
+    public void actualizar(ClienteEntity cliente) throws Exception {
+        dao.actualizar(cliente);
+    }
+
+    public void eliminar(String id) throws Exception {
+        dao.eliminar(id);
+    }
 }
