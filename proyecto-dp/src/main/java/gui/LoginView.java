@@ -49,7 +49,6 @@ public class LoginView extends javax.swing.JFrame {
         jIngresar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(600, 450));
 
         jPanelAzul.setBackground(new java.awt.Color(0, 57, 93));
         jPanelAzul.setLayout(new java.awt.GridBagLayout());
@@ -118,6 +117,7 @@ public class LoginView extends javax.swing.JFrame {
         jIngresar.setText("Ingresar");
         jIngresar.setOpaque(true);
         jIngresar.setPreferredSize(new java.awt.Dimension(0, 40));
+        jIngresar.addActionListener(this::jIngresarActionPerformed);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -164,6 +164,10 @@ public class LoginView extends javax.swing.JFrame {
             jUsuarioText.setForeground(java.awt.Color.GRAY);
         }
     }//GEN-LAST:event_jUsuarioTextFocusLost
+
+    private void jIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jIngresarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jIngresarActionPerformed
 
     /**
      * @param args the command line arguments
