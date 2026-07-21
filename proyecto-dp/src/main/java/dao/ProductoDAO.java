@@ -148,22 +148,11 @@ public class ProductoDAO {
     }
 
         public void eliminar(String idProducto) throws Exception {
-        try {
-            cn = AccesoDB.getConnection();
-
-            sql = "DELETE FROM productos WHERE id_producto = ?";
-
-            ps = cn.prepareStatement(sql);
+            String sql = "DELETE FROM productos WHERE id_producto = ?";
+        try (Connection cn = AccesoDB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setString(1, idProducto);
-
             ps.executeUpdate();
-
-            ps.close();
-
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            cn.close();
         }
     }
 
@@ -184,36 +173,30 @@ public class ProductoDAO {
     }
 
     public void descontarStock(String idProducto, int cantidad) throws Exception {
-        try {
-            cn = AccesoDB.getConnection();
-            cn.setAutoCommit(false);
-
-            sql = "SELECT stock FROM productos WHERE id_producto = ? FOR UPDATE";
-            ps = cn.prepareStatement(sql);
-            ps.setString(1, idProducto);
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                int stockActual = rs.getInt("stock");
-                if (stockActual < cantidad) {
-                    throw new Exception("Stock insuficiente para el producto: " + idProducto);
-                }
-                int nuevoStock = stockActual - cantidad;
-                sql = "UPDATE productos SET stock = ? WHERE id_producto = ?";
-                ps = cn.prepareStatement(sql);
-                ps.setInt(1, nuevoStock);
-                ps.setString(2, idProducto);
-                ps.executeUpdate();
-            } else {
-                throw new Exception("Producto no encontrado: " + idProducto);
-            }
-            rs.close();
-            ps.close();
-            cn.commit();
-        } catch (Exception e) {
-            try { cn.rollback(); } catch (Exception ex) {}
-            throw e;
-        } finally {
-            cn.close();
+    String sql = "UPDATE productos SET stock = stock - ? WHERE id_producto = ? AND stock >= ?";
+    try (Connection cn = AccesoDB.getConnection();
+         PreparedStatement ps = cn.prepareStatement(sql)) {
+        ps.setInt(1, cantidad);
+        ps.setString(2, idProducto);
+        ps.setInt(3, cantidad);
+        int filas = ps.executeUpdate();
+        if (filas == 0) {
+            throw new Exception("Stock insuficiente para el producto: " + idProducto);
+        }
+    }
+}
+    
+    public void actualizar(ProductoEntity o) throws Exception {
+        String sql = "UPDATE productos SET nombre=?, precio=?, stock=?, tipo=?, tamanio=? WHERE id_producto=?";
+        try (Connection cn = AccesoDB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, o.getNombre());
+            ps.setDouble(2, o.getPrecio());
+            ps.setInt(3, o.getStock());
+            ps.setString(4, o.getTipo());
+            ps.setString(5, o.getTamanio());
+            ps.setString(6, o.getIdProducto());
+            ps.executeUpdate();
         }
     }
 }

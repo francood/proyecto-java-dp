@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -73,10 +73,7 @@
                                   </Group>
                               </Group>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" attributes="0">
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="btnRefrescar" min="-2" max="-2" attributes="0"/>
-                                  </Group>
+                                  <Component id="btnRefrescar" min="-2" max="-2" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" pref="65" max="-2" attributes="0"/>
                                       <Component id="lblTotalDetalle" min="-2" max="-2" attributes="0"/>
@@ -107,14 +104,16 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="224" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="btnVerDetalle" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnPreparar" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnMarcarListo" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnEnviar" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnCancelar" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnRefrescar" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="btnConfirmarPedido" alignment="0" min="-2" pref="27" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="btnVerDetalle" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnPreparar" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnMarcarListo" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnEnviar" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnCancelar" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnRefrescar" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -271,6 +270,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Ver Detalle"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnVerDetalleActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnPreparar">
       <Properties>

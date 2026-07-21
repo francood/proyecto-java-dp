@@ -1,7 +1,7 @@
 package controller;
 
-import com.utp.restaurante.entity.ClienteEntity;
 import dao.ClienteDAO;
+import entity.ClienteEntity;
 import java.util.List;
 
 public class ClienteController {

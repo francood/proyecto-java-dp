@@ -4,6 +4,16 @@
  */
 package View;
 
+import controller.ClienteController;
+import controller.PedidoController;
+import controller.ProductoController;
+import entity.ClienteEntity;
+import entity.DetallePedidoEntity;
+import entity.PedidoEntity;
+import entity.ProductoEntity;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -12,138 +22,176 @@ import javax.swing.table.DefaultTableModel;
  * @author Elizabet
  */
 public class KanbanView extends javax.swing.JPanel {
+    
+  private PedidoController pedidoController = new PedidoController();
+    private ProductoController productoController = new ProductoController();
+    private Map<String, String> mapaClientes = new HashMap<>();
+    private Map<String, String> mapaProductos = new HashMap<>();
+    private boolean clientesCargados = false;
+    private boolean productosCargados = false;
 
-    /**
-     * Creates new form KanbanView
-     */
     public KanbanView() {
         initComponents();
-
         configurarTablaPedidos();
         configurarTablaDetalle();
-
         cargarPedidos();
+        btnVerDetalle.addActionListener(e -> verDetallePedido());
+        cbCanal.removeAllItems();
+        cbCanal.addItem("Todos los canales");
+        for (core.modelo.TipoCanal tc : core.modelo.TipoCanal.values()) {
+            cbCanal.addItem(tc.toString()); // Esto da "SALON", "PARA_LLEVAR", etc.
+        }
     }
 
     private void configurarTablaPedidos() {
-
         tblPedidos.setModel(new DefaultTableModel(
                 new Object[][]{},
-                new String[]{
-                    "N° Pedido",
-                    "Cliente",
-                    "Canal",
-                    "Total (S/)",
-                    "Estado",
-                    "Fecha"
-                }
+                new String[]{"N° Pedido", "Cliente", "Canal", "Total (S/)", "Estado", "Fecha"}
         ));
+        // Ajustar anchos de columnas
+        tblPedidos.getColumnModel().getColumn(0).setPreferredWidth(80);
+        tblPedidos.getColumnModel().getColumn(1).setPreferredWidth(150);
+        tblPedidos.getColumnModel().getColumn(2).setPreferredWidth(100);
+        tblPedidos.getColumnModel().getColumn(3).setPreferredWidth(80);
+        tblPedidos.getColumnModel().getColumn(4).setPreferredWidth(100);
+        tblPedidos.getColumnModel().getColumn(5).setPreferredWidth(100);
     }
 
     private void configurarTablaDetalle() {
-
         tblDetallePedido.setModel(new DefaultTableModel(
                 new Object[][]{},
-                new String[]{
-                    "Producto",
-                    "Cant.",
-                    "Subtotal"
-                }
+                new String[]{"Producto", "Cant.", "Subtotal"}
         ));
+        tblDetallePedido.getColumnModel().getColumn(0).setPreferredWidth(200);
+        tblDetallePedido.getColumnModel().getColumn(1).setPreferredWidth(60);
+        tblDetallePedido.getColumnModel().getColumn(2).setPreferredWidth(80);
+    }
+
+    // Carga el mapa de clientes solo una vez
+    private void cargarMapaClientes() {
+        if (clientesCargados) return;
+        try {
+            ClienteController clienteController = new ClienteController();
+            for (ClienteEntity c : clienteController.listarTodos()) {
+                mapaClientes.put(c.getIdCliente(), c.getNombre());
+            }
+            clientesCargados = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Carga el mapa de productos solo una vez
+    private void cargarMapaProductos() {
+        if (productosCargados) return;
+        try {
+            for (ProductoEntity p : productoController.listarTodos()) {
+                mapaProductos.put(p.getIdProducto(), p.getNombre());
+            }
+            productosCargados = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void cargarPedidos() {
-
-        DefaultTableModel modelo
-                = (DefaultTableModel) tblPedidos.getModel();
-
+        cargarMapaClientes();
+        DefaultTableModel modelo = (DefaultTableModel) tblPedidos.getModel();
         modelo.setRowCount(0);
-
-        modelo.addRow(new Object[]{
-            "PED-1001",
-            "Ana Rojas",
-            "Para Llevar",
-            81.50,
-            "Enviado",
-            "2026-07-18"
-        });
-
-        modelo.addRow(new Object[]{
-            "PED-1002",
-            "Carlos Perez",
-            "Salón",
-            45.00,
-            "Confirmado",
-            "2026-07-18"
-        });
-
-        modelo.addRow(new Object[]{
-            "PED-1003",
-            "Maria Gomez",
-            "Delivery propio",
-            112.00,
-            "Pendiente",
-            "2026-07-17"
-        });
-
-        modelo.addRow(new Object[]{
-            "PED-1004",
-            "Luis Torres",
-            "Para Llevar",
-            28.50,
-            "Listo",
-            "2026-07-17"
-        });
-
-        lblCantidadPedidos.setText(
-                "Mostrando " + modelo.getRowCount() + " pedidos"
-        );
+        try {
+            List<PedidoEntity> lista = pedidoController.listarTodos();
+            for (PedidoEntity p : lista) {
+                String nombreCliente = mapaClientes.getOrDefault(p.getIdCliente(), "Desconocido");
+                modelo.addRow(new Object[]{
+                    p.getIdPedido(),
+                    nombreCliente,
+                    p.getCanal(),
+                    p.getTotal(),
+                    p.getEstado(),
+                    p.getFecha() != null ? p.getFecha().substring(0, 10) : ""
+                });
+            }
+            lblCantidadPedidos.setText("Mostrando " + modelo.getRowCount() + " pedidos");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar pedidos: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    private void cargarDetallePedido() {
-
-        DefaultTableModel modelo
-                = (DefaultTableModel) tblDetallePedido.getModel();
-
+    private void cargarDetallePedido(int idPedido) {
+        cargarMapaProductos();
+        DefaultTableModel modelo = (DefaultTableModel) tblDetallePedido.getModel();
         modelo.setRowCount(0);
+        try {
+            List<DetallePedidoEntity> detalles = pedidoController.listarDetallesPorPedido(idPedido);
+            double subtotal = 0;
+            for (DetallePedidoEntity d : detalles) {
+                String nombreProducto = mapaProductos.getOrDefault(d.getIdProducto(), d.getIdProducto());
+                modelo.addRow(new Object[]{
+                    nombreProducto,
+                    d.getCantidad(),
+                    d.getSubtotal()
+                });
+                subtotal += d.getSubtotal();
+            }
+            lblSubtotal.setText("Subtotal: S/" + String.format("%.2f", subtotal));
+            lblDescuento.setText("Descuento: 0.00");
+            lblTotalFinal.setText("Total: S/" + String.format("%.2f", subtotal));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar detalle: " + e.getMessage());
+            modelo.addRow(new Object[]{"Error al cargar", "", ""});
+        }
+    }
 
-        modelo.addRow(new Object[]{
-            "Tallarines verdes",
-            2,
-            36.00
-        });
-
-        modelo.addRow(new Object[]{
-            "Limonada",
-            2,
-            9.00
-        });
-
-        lblSubtotal.setText("Subtotal: 45.00");
-        lblDescuento.setText("Descuento: 0.00");
-        lblTotalFinal.setText("Total: 45.00");
+    private void verDetallePedido() {
+        int fila = tblPedidos.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un pedido");
+            return;
+        }
+        int idPedido = (int) tblPedidos.getValueAt(fila, 0);
+        String cliente = tblPedidos.getValueAt(fila, 1).toString();
+        String total = tblPedidos.getValueAt(fila, 3).toString();
+        lblDetallePedido.setText("Detalle del pedido N°" + idPedido);
+        lblClienteDetalle.setText("Cliente: " + cliente);
+        lblTotalDetalle.setText("Total: S/ " + total);
+        cargarDetallePedido(idPedido);
     }
 
     private void cambiarEstado(String nuevoEstado) {
-
         int fila = tblPedidos.getSelectedRow();
-
         if (fila == -1) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Selecciona un pedido"
-            );
-
+            JOptionPane.showMessageDialog(this, "Selecciona un pedido");
             return;
         }
+        int idPedido = (int) tblPedidos.getValueAt(fila, 0);
+        String estadoActual = tblPedidos.getValueAt(fila, 4).toString();
 
-        tblPedidos.setValueAt(
-                nuevoEstado,
-                fila,
-                4
-        );
+        // Confirmar solo si es cancelar
+        if ("Cancelado".equals(nuevoEstado)) {
+            int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "¿Estás seguro de cancelar el pedido N°" + idPedido + "?",
+                "Confirmar cancelación",
+                JOptionPane.YES_NO_OPTION
+            );
+            if (confirm != JOptionPane.YES_OPTION) return;
+        }
+
+        try {
+            pedidoController.actualizarEstado(idPedido, nuevoEstado);
+            JOptionPane.showMessageDialog(this, "Estado actualizado a: " + nuevoEstado);
+            cargarPedidos(); // Recargar tabla
+            // Limpiar detalle
+            ((DefaultTableModel) tblDetallePedido.getModel()).setRowCount(0);
+            lblSubtotal.setText("Subtotal: 0.00");
+            lblDescuento.setText("Descuento: 0.00");
+            lblTotalFinal.setText("Total: 0.00");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al actualizar estado: " + e.getMessage());
+        }
     }
+
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -227,6 +275,11 @@ public class KanbanView extends javax.swing.JPanel {
         });
 
         btnVerDetalle.setText("Ver Detalle");
+        btnVerDetalle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVerDetalleActionPerformed(evt);
+            }
+        });
 
         btnPreparar.setText("Preparar");
         btnPreparar.addActionListener(new java.awt.event.ActionListener() {
@@ -349,9 +402,7 @@ public class KanbanView extends javax.swing.JPanel {
                                         .addComponent(lblClienteDetalle)
                                         .addGap(8, 8, 8)))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(btnRefrescar))
+                                    .addComponent(btnRefrescar)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(65, 65, 65)
                                         .addComponent(lblTotalDetalle)
@@ -373,14 +424,15 @@ public class KanbanView extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnVerDetalle)
-                    .addComponent(btnPreparar)
-                    .addComponent(btnMarcarListo)
-                    .addComponent(btnEnviar)
-                    .addComponent(btnCancelar)
-                    .addComponent(btnRefrescar)
-                    .addComponent(btnConfirmarPedido, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnConfirmarPedido, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnVerDetalle)
+                        .addComponent(btnPreparar)
+                        .addComponent(btnMarcarListo)
+                        .addComponent(btnEnviar)
+                        .addComponent(btnCancelar)
+                        .addComponent(btnRefrescar)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblDetallePedido)
@@ -399,87 +451,32 @@ public class KanbanView extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tblPedidosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPedidosMouseClicked
-        int fila = tblPedidos.getSelectedRow();
-
-        if (fila >= 0) {
-
-            String numeroPedido
-                    = tblPedidos.getValueAt(fila, 0).toString();
-
-            String cliente
-                    = tblPedidos.getValueAt(fila, 1).toString();
-
-            String total
-                    = tblPedidos.getValueAt(fila, 3).toString();
-
-            lblDetallePedido.setText(
-                    "Detalle del pedido " + numeroPedido
-            );
-
-            lblClienteDetalle.setText(
-                    "Cliente: " + cliente
-            );
-
-            lblTotalDetalle.setText(
-                    "Total: S/ " + total
-            );
-
-            cargarDetallePedido();
-        }
+      verDetallePedido();
     }//GEN-LAST:event_tblPedidosMouseClicked
 
+    
     private void btnFiltrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFiltrarActionPerformed
-        String texto = txtBuscarPedido.getText()
-                .trim()
-                .toLowerCase();
+        cargarPedidos();
+        String texto = txtBuscarPedido.getText().trim().toLowerCase();
+        String estado = cbEstado.getSelectedItem().toString();
+        String canal = cbCanal.getSelectedItem().toString();
 
-        String estado
-                = cbEstado.getSelectedItem().toString();
-
-        String canal
-                = cbCanal.getSelectedItem().toString();
-
-        DefaultTableModel modelo
-                = (DefaultTableModel) tblPedidos.getModel();
-
+        DefaultTableModel modelo = (DefaultTableModel) tblPedidos.getModel();
         for (int i = modelo.getRowCount() - 1; i >= 0; i--) {
+            String pedido = modelo.getValueAt(i, 0).toString().toLowerCase();
+            String cliente = modelo.getValueAt(i, 1).toString().toLowerCase();
+            String estadoPedido = modelo.getValueAt(i, 4).toString();
+            String canalPedido = modelo.getValueAt(i, 2).toString();
 
-            String pedido
-                    = modelo.getValueAt(i, 0).toString().toLowerCase();
+            boolean coincideTexto = texto.isEmpty() || pedido.contains(texto) || cliente.contains(texto);
+            boolean coincideEstado = estado.equals("Todos los estados") || estado.equals(estadoPedido);
+           boolean coincideCanal = canal.equals("Todos los canales") || canal.equalsIgnoreCase(canalPedido);
 
-            String cliente
-                    = modelo.getValueAt(i, 1).toString().toLowerCase();
-
-            String estadoPedido
-                    = modelo.getValueAt(i, 4).toString();
-
-            String canalPedido
-                    = modelo.getValueAt(i, 2).toString();
-
-            boolean coincideTexto
-                    = texto.isEmpty()
-                    || pedido.contains(texto)
-                    || cliente.contains(texto);
-
-            boolean coincideEstado
-                    = estado.equals("Todos los estados")
-                    || estado.equals(estadoPedido);
-
-            boolean coincideCanal
-                    = canal.equals("Todos los canales")
-                    || canal.equals(canalPedido);
-
-            if (!coincideTexto
-                    || !coincideEstado
-                    || !coincideCanal) {
-
+            if (!coincideTexto || !coincideEstado || !coincideCanal) {
                 modelo.removeRow(i);
             }
         }
-
-        lblCantidadPedidos.setText(
-                "Mostrando " + modelo.getRowCount() + " pedidos"
-        );
+        lblCantidadPedidos.setText("Mostrando " + modelo.getRowCount() + " pedidos");
     }//GEN-LAST:event_btnFiltrarActionPerformed
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
@@ -522,34 +519,25 @@ public class KanbanView extends javax.swing.JPanel {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void tblDetallePedidoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDetallePedidoMouseClicked
-        int fila = tblPedidos.getSelectedRow();
 
-        if (fila >= 0) {
-
-            String numeroPedido
-                    = tblPedidos.getValueAt(fila, 0).toString();
-
-            String cliente
-                    = tblPedidos.getValueAt(fila, 1).toString();
-
-            String total
-                    = tblPedidos.getValueAt(fila, 3).toString();
-
-            lblDetallePedido.setText(
-                    "Detalle del pedido " + numeroPedido
-            );
-
-            lblClienteDetalle.setText(
-                    "Cliente: " + cliente
-            );
-
-            lblTotalDetalle.setText(
-                    "Total: S/ " + total
-            );
-
-            cargarDetallePedido();
-        }
     }//GEN-LAST:event_tblDetallePedidoMouseClicked
+
+    private void btnVerDetalleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerDetalleActionPerformed
+        int fila = tblPedidos.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un pedido");
+            return;
+        }
+        int idPedido = (int) tblPedidos.getValueAt(fila, 0);
+        String cliente = tblPedidos.getValueAt(fila, 1).toString();
+        String total = tblPedidos.getValueAt(fila, 3).toString();
+
+        lblDetallePedido.setText("Detalle del pedido " + idPedido);
+        lblClienteDetalle.setText("Cliente: " + cliente);
+        lblTotalDetalle.setText("Total: S/ " + total);
+
+        cargarDetallePedido(idPedido);
+    }//GEN-LAST:event_btnVerDetalleActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

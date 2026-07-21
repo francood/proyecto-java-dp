@@ -39,4 +39,8 @@ public class ProductoController {
         public void eliminar(String idProducto) throws Exception {
         dao.eliminar(idProducto);
     }
+        
+    public void actualizar(ProductoEntity producto) throws Exception {
+    dao.actualizar(producto);
+}
 }

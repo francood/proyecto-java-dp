@@ -4,8 +4,11 @@
  */
 package View;
 
+import controller.PedidoController;
+import entity.PedidoEntity;
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -16,6 +19,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ReporteView extends javax.swing.JPanel {
 
+    PedidoController pedidoController = new PedidoController();
     /**
      * Creates new form ReporteView
      */
@@ -50,8 +54,6 @@ public class ReporteView extends javax.swing.JPanel {
         btnCerrarReporte = new javax.swing.JButton();
 
         lblSucursalReporte.setText("Sucursal:");
-
-        cbSucursalReporte.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         btnGenerar.setText("Generar");
         btnGenerar.addActionListener(new java.awt.event.ActionListener() {
@@ -106,22 +108,32 @@ public class ReporteView extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(38, 38, 38)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnRefrescar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnCerrarReporte))
+                        .addGap(47, 47, 47)
+                        .addComponent(btnRefrescar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(34, 34, 34)
+                        .addComponent(btnCerrarReporte, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(69, 69, 69))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(lblCancelados)
-                    .addComponent(lblTasa)
-                    .addComponent(lblTotalPedidos)
-                    .addComponent(lblSucursalReporte)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblCancelados, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(238, 238, 238))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblTasa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(209, 209, 209))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblTotalPedidos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(225, 225, 225))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblSucursalReporte, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(255, 255, 255))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btnGenerar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 130, Short.MAX_VALUE)
-                        .addComponent(btnExportarCSV))
+                        .addComponent(btnGenerar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(130, 130, 130)
+                        .addComponent(btnExportarCSV, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(cbSucursalReporte, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(55, Short.MAX_VALUE))
+                .addGap(36, 36, 36))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -141,12 +153,12 @@ public class ReporteView extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblTasa)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnRefrescar)
                     .addComponent(btnCerrarReporte))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addGap(18, 18, 18))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -161,16 +173,29 @@ public class ReporteView extends javax.swing.JPanel {
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
         try {
             String sucursal = cbSucursalReporte.getSelectedItem().toString();
+            // Aquí podrías filtrar por sucursal si lo deseas, pero por ahora obtenemos todos los pedidos
 
-            // Datos temporales de prueba
-            lblTotalPedidos.setText("Total pedidos: 0");
-            lblCancelados.setText("Cancelados: 0");
-            lblTasa.setText("Tasa cancelación: 0%");
+            // 1. Obtener estadísticas generales (total pedidos, cancelados, etc.)
+            List<PedidoEntity> pedidos = pedidoController.listarTodos();
+            long totalPedidos = pedidos.size();
+            long cancelados = pedidos.stream()
+                    .filter(p -> "Cancelado".equals(p.getEstado()))
+                    .count();
+            double tasa = totalPedidos > 0 ? (cancelados * 100.0 / totalPedidos) : 0;
 
-            DefaultTableModel modelo
-                    = (DefaultTableModel) tblProductosTop.getModel();
+            lblTotalPedidos.setText("Total pedidos: " + totalPedidos);
+            lblCancelados.setText("Cancelados: " + cancelados);
+            lblTasa.setText("Tasa cancelación: " + String.format("%.2f", tasa) + "%");
 
+            // 2. Obtener el top 5 de productos más vendidos
+            List<Object[]> topProductos = pedidoController.obtenerTopProductos();
+
+            // 3. Llenar la tabla
+            DefaultTableModel modelo = (DefaultTableModel) tblProductosTop.getModel();
             modelo.setRowCount(0);
+            for (Object[] fila : topProductos) {
+                modelo.addRow(fila);
+            }
 
             JOptionPane.showMessageDialog(this,
                     "Reporte generado para la sucursal: " + sucursal);

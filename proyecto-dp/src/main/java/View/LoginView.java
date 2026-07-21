@@ -2,7 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package gui;
+package View;
+
+import controller.EmpleadoController;
+import estilos.EstiloUI;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -50,7 +54,7 @@ public class LoginView extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanelAzul.setBackground(new java.awt.Color(0, 57, 93));
+        jPanelAzul.setBackground(new java.awt.Color(153, 153, 153));
         jPanelAzul.setLayout(new java.awt.GridBagLayout());
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -166,13 +170,77 @@ public class LoginView extends javax.swing.JFrame {
     }//GEN-LAST:event_jUsuarioTextFocusLost
 
     private void jIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jIngresarActionPerformed
-        // TODO add your handling code here:
+        String usuario = jUsuarioText.getText().trim();
+    String clave = new String(jPassword.getPassword()).trim();
+
+    // Validar que los campos no estén vacíos
+    if (usuario.isEmpty() || clave.isEmpty()) {
+        JOptionPane.showMessageDialog(this,
+            "Ingrese usuario y contraseña",
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Validar que no sea el placeholder
+    if (usuario.equals("ej. admin")) {
+        JOptionPane.showMessageDialog(this,
+            "Ingrese un usuario válido",
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try {
+        // Instanciar el controlador de empleados
+        EmpleadoController empleadoController = new EmpleadoController();
+
+        // Validar credenciales
+        boolean valido = empleadoController.validarLogin(usuario, clave);
+
+        if (valido) {
+            // Obtener el empleado completo para guardarlo en la sesión
+            entity.EmpleadoEntity empleado = empleadoController.buscarPorUsuario(usuario);
+
+            // Guardar en sesión
+            conexion.Sesion.iniciarSesion(empleado);
+
+            // Cerrar LoginView y abrir PrincipalView
+            this.dispose(); // Cierra la ventana de login
+
+            // Abrir la ventana principal
+            PrincipalView principal = new PrincipalView();
+            principal.setVisible(true);
+            principal.setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
+
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "Usuario o contraseña incorrectos",
+                "Acceso denegado",
+                JOptionPane.ERROR_MESSAGE);
+            // Limpiar campos
+            jUsuarioText.setText("");
+            jPassword.setText("");
+            jUsuarioText.requestFocus();
+        }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Error al conectar con la base de datos:\n" + e.getMessage(),
+            "Error de conexión",
+            JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
     }//GEN-LAST:event_jIngresarActionPerformed
 
+    
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        
+        EstiloUI.aplicarEstiloGlobal();
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.

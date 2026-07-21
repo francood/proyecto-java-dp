@@ -2,7 +2,7 @@ package dao;
 
 import conexion.AccesoDB;
 import conexion.AccesoDB_main;
-import com.utp.restaurante.entity.ClienteEntity;
+import entity.ClienteEntity;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

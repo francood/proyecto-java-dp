@@ -156,4 +156,13 @@ public class PedidoController {
     public void actualizarCalificacion(int idPedido, int calificacion, String comentario) throws Exception {
         pedidoDAO.actualizarCalificacion(idPedido, calificacion, comentario);
     }
+    
+    public void actualizarEstado(int idPedido, String nuevoEstado) throws Exception {
+    pedidoDAO.actualizarEstado(idPedido, nuevoEstado);
+    }
+    
+    public List<Object[]> obtenerTopProductos() throws Exception {
+    // Devuelve los 5 productos más vendidos
+    return pedidoDAO.obtenerTopProductos(5);
+    }
 }

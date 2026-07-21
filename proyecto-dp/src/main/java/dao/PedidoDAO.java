@@ -19,39 +19,35 @@ public class PedidoDAO {
     private String sql = "";
 
     // Guarda un pedido y devuelve el ID generado (AUTO_INCREMENT)
+    
     public int guardar(PedidoEntity o) throws Exception {
-        int idGenerado = 0;
-        try {
-            cn = AccesoDB.getConnection();
-            cn.setAutoCommit(false);
+    int idGenerado = 0;
+    String sql = "INSERT INTO pedidos (id_cliente, id_sucursal, id_empleado, canal, total, estado, fecha, calificacion, comentario) " +
+                 "VALUES (?, ?, ?, ?, ?, ?, GETDATE(), ?, ?)";
+    try (Connection cn = AccesoDB.getConnection();
+         PreparedStatement ps = cn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        
+        ps.setString(1, o.getIdCliente());
+        ps.setInt(2, o.getIdSucursal());
+        ps.setString(3, o.getIdEmpleado()); // puede ser null
+        ps.setString(4, o.getCanal());
+        ps.setDouble(5, o.getTotal());
+        ps.setString(6, o.getEstado());
+        // La fecha se pone con GETDATE() en la sentencia, no la pasamos como parámetro
+        ps.setObject(7, o.getCalificacion() != null ? o.getCalificacion() : 0); // columna calificacion
+        ps.setString(8, o.getComentario()); // columna comentario
 
-            sql = "INSERT INTO pedidos (id_cliente, id_sucursal, id_empleado, canal, total, estado, fecha, calificacion, comentario) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?)";
-            ps.setString(1, o.getIdCliente());
-            ps.setInt(2, o.getIdSucursal());
-            ps.setString(3, o.getIdEmpleado());
-            ps.setString(4, o.getCanal());
-            ps.setDouble(5, o.getTotal());
-            ps.setString(6, o.getEstado());
-            ps.setInt(7, o.getCalificacion() != null ? o.getCalificacion() : 0);
-            ps.setString(8, o.getComentario());
+        ps.executeUpdate();
 
-            rs = ps.getGeneratedKeys();
+        try (ResultSet rs = ps.getGeneratedKeys()) {
             if (rs.next()) {
                 idGenerado = rs.getInt(1);
                 o.setIdPedido(idGenerado);
             }
-            rs.close();
-            ps.close();
-
-            cn.commit();
-        } catch (Exception e) {
-            try { cn.rollback(); } catch (Exception ex) {}
-            throw e;
-        } finally {
-            cn.close();
         }
-        return idGenerado;
     }
+    return idGenerado;
+}
 
     public List<PedidoEntity> listarTodos() throws Exception {
         List<PedidoEntity> lista = new ArrayList<>();
@@ -171,4 +167,38 @@ public class PedidoDAO {
             ps.executeUpdate();
         }
     }
+    
+   public void actualizarEstado(int idPedido, String nuevoEstado) throws Exception {
+    String sql = "UPDATE pedidos SET estado = ? WHERE id_pedido = ?";
+    try (Connection cn = AccesoDB.getConnection();
+         PreparedStatement ps = cn.prepareStatement(sql)) {
+        ps.setString(1, nuevoEstado);
+        ps.setInt(2, idPedido);
+        ps.executeUpdate();
+    }
 }
+    
+    public List<Object[]> obtenerTopProductos(int limite) throws Exception {
+        List<Object[]> top = new ArrayList<>();
+        String sql = "SELECT p.nombre, SUM(dp.cantidad) AS total_vendido " +
+                     "FROM detalle_pedido dp " +
+                     "JOIN productos p ON dp.id_producto = p.id_producto " +
+                     "GROUP BY p.id_producto, p.nombre " +
+                     "ORDER BY total_vendido DESC " +
+                     "LIMIT ?";
+        try (Connection cn = AccesoDB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, limite);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Object[] fila = new Object[2];
+                    fila[0] = rs.getString("nombre");
+                    fila[1] = rs.getInt("total_vendido");
+                    top.add(fila);
+                }
+            }
+        }
+        return top;
+    }
+}
+

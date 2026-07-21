@@ -1,4 +1,4 @@
-package com.utp.restaurante.entity;
+package entity;
 
 public class ClienteEntity {
 
